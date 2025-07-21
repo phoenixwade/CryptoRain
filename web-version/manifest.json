@@ -1,0 +1,21 @@
+{
+  "name": "Crypto Rain",
+  "short_name": "CryptoRain",
+  "description": "Catch falling crypto tokens in this exciting blockchain game",
+  "start_url": "/",
+  "display": "fullscreen",
+  "background_color": "#1a1a2e",
+  "theme_color": "#4a90e2",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
