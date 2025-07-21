@@ -28,7 +28,7 @@ class CryptoRainGame {
             weight: i < 10 ? 50 : i < 13 ? 20 : 5
         }));
         
-        this.API_URL = 'https://api.cryptokaraoke.io';
+        this.API_URL = 'https://cryptokaraoke.io/api';
         this.leaderboard = [];
         
         this.initializeProtonSDK();
