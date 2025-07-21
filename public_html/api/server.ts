@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '../../../.env' });
 
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: ['https://cryptokaraoke.io', 'https://www.cryptokaraoke.io', 'http://localhost:8080'],
+  origin: (process.env.CORS_ORIGINS || 'https://cryptokaraoke.io,https://www.cryptokaraoke.io,http://localhost:8080').split(','),
   credentials: true
 }));
 

@@ -2,8 +2,10 @@
 import http.server
 import socketserver
 import os
+from dotenv import load_dotenv
 
-PORT = 8080
+load_dotenv('../.env')
+PORT = int(os.getenv('DEV_PORT', 8080))
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
