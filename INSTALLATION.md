@@ -209,8 +209,9 @@ npm install -g @proton/cli
 npx @proton/cli chain:set proton-test
 npx @proton/cli chain:get  # Verify chain is set correctly
 
-# Add your private key (if not already added)
-npx @proton/cli key:add YOUR_PRIVATE_KEY
+# Add your wsaffiliate private key (XPR format, not GitHub token)
+npx @proton/cli key:add YOUR_WSAFFILIATE_PRIVATE_KEY
+# Choose "no" when asked about password encryption
 npx @proton/cli key:list  # Verify key is stored
 
 # Navigate to smart contract directory
@@ -218,8 +219,9 @@ cd smart-contract/
 
 # Compile TypeScript contract to WASM
 npx proton-asc gamecontract.contract.ts
+# This generates target/gamecontract.contract.wasm and target/gamecontract.contract.abi
 
-# Deploy to XPR testnet (replace wsaffiliate with your account)
+# Deploy to XPR testnet using wsaffiliate account
 npx @proton/cli contract:set wsaffiliate ./target
 
 # Verify deployment by checking contract on XPR block explorer
@@ -244,6 +246,12 @@ npx @proton/cli contract:set wsaffiliate ./target
 - Verify account has sufficient RAM and CPU resources
 - Check that private key corresponds to the deployment account
 - Ensure WASM and ABI files exist in target directory
+
+**Key Format Error:**
+If you get "invalid base-58 value" error, ensure you're using the XPR private key for wsaffiliate account, not a GitHub or other token. The private key should be in base-58 format starting with "5" and be approximately 51 characters long.
+
+**Missing Private Key:**
+The wsaffiliate account private key is required for deployment. This should be obtained from the XPR testnet account creation process, not from GitHub tokens or other sources.
 
 ### 4.2 XPR Webauth Configuration
 

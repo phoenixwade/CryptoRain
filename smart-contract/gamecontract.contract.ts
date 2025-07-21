@@ -203,7 +203,7 @@ export class LeaderboardEntry implements _chain.MultiIndexValue {
     pack(): u8[] {
         let enc = new _chain.Encoder(this.getSize());
         enc.pack(this.user);
-        enc.packNumber<u64>(this.score!);
+        enc.packNumber<u64>(this.score);
         enc.packNumber<u64>(this.timestamp);
         return enc.getBytes();
     }
@@ -216,7 +216,7 @@ export class LeaderboardEntry implements _chain.MultiIndexValue {
             dec.unpack(obj);
             this.user = obj;
         }
-        this.score! = dec.unpackNumber<u64>();
+        this.score = dec.unpackNumber<u64>();
         this.timestamp = dec.unpackNumber<u64>();
         return dec.getPos();
     }
@@ -321,104 +321,6 @@ export class GameContract extends Contract {
 }
 
 
-class startgameAction implements _chain.Packer {
-    constructor (
-        public user: _chain.Name | null = null,
-    ) {
-    }
-
-    pack(): u8[] {
-        let enc = new _chain.Encoder(this.getSize());
-        enc.pack(this.user!);
-        return enc.getBytes();
-    }
-    
-    unpack(data: u8[]): usize {
-        let dec = new _chain.Decoder(data);
-        
-        {
-            let obj = new _chain.Name();
-            dec.unpack(obj);
-            this.user! = obj;
-        }
-        return dec.getPos();
-    }
-
-    getSize(): usize {
-        let size: usize = 0;
-        size += this.user!.getSize();
-        return size;
-    }
-}
-
-class claimmultiAction implements _chain.Packer {
-    constructor (
-        public user: _chain.Name | null = null,
-        public types: u8[] | null = null,
-    ) {
-    }
-
-    pack(): u8[] {
-        let enc = new _chain.Encoder(this.getSize());
-        enc.pack(this.user!);
-        enc.packNumberArray<u8>(this.types!);
-        return enc.getBytes();
-    }
-    
-    unpack(data: u8[]): usize {
-        let dec = new _chain.Decoder(data);
-        
-        {
-            let obj = new _chain.Name();
-            dec.unpack(obj);
-            this.user! = obj;
-        }
-        
-        this.types! = dec.unpackNumberArray<u8>();
-        return dec.getPos();
-    }
-
-    getSize(): usize {
-        let size: usize = 0;
-        size += this.user!.getSize();
-        size += sizeof<u32>() + this.types!.length * sizeof<u8>();
-        return size;
-    }
-}
-
-class submitscoreAction implements _chain.Packer {
-    constructor (
-        public user: _chain.Name | null = null,
-        public score: u64 | null = null,
-    ) {
-    }
-
-    pack(): u8[] {
-        let enc = new _chain.Encoder(this.getSize());
-        enc.pack(this.user!);
-        enc.packNumber<u64>(this.score!);
-        return enc.getBytes();
-    }
-    
-    unpack(data: u8[]): usize {
-        let dec = new _chain.Decoder(data);
-        
-        {
-            let obj = new _chain.Name();
-            dec.unpack(obj);
-            this.user! = obj;
-        }
-        this.score! = dec.unpackNumber<u64>();
-        return dec.getPos();
-    }
-
-    getSize(): usize {
-        let size: usize = 0;
-        size += this.user!.getSize();
-        size += sizeof<u64>();
-        return size;
-    }
-}
 
 export function apply(receiver: u64, firstReceiver: u64, action: u64): void {
 	const _receiver = new _chain.Name(receiver);
@@ -442,7 +344,7 @@ export function apply(receiver: u64, firstReceiver: u64, action: u64): void {
 		if (action == 0xC68F276708A5D400) {//submitscore
             const args = new submitscoreAction();
             args.unpack(actionData);
-            mycontract.submitscore(args.user!,args.score!);
+            mycontract.submitscore(args.user!,args.score);
         }
 	}
   
