@@ -175,11 +175,11 @@ Upload the contents of `public_html/` (excluding `api/` directory) to your domai
 
 ```bash
 # Set proper permissions
-chmod 644 /home/username/public_html/*.html
-chmod 644 /home/username/public_html/*.js
-chmod 644 /home/username/public_html/*.json
-chmod 644 /home/username/public_html/*.png
-chmod 755 /home/username/public_html/api/
+chmod 644 /home/cryptokaraoke/public_html/*.html
+chmod 644 /home/cryptokaraoke/public_html/*.js
+chmod 644 /home/cryptokaraoke/public_html/*.json
+chmod 644 /home/cryptokaraoke/public_html/*.png
+chmod 755 /home/cryptokaraoke/public_html/api/
 ```
 
 ### 3.3 Configure HTTPS
