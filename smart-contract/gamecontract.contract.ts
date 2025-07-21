@@ -33,10 +33,25 @@ export class UserInfo {
   }
 }
 
+@table("leaderboard")
+export class LeaderboardEntry {
+  constructor(
+    public user: Name = EMPTY_NAME,
+    public score: u64 = 0,
+    public timestamp: u64 = 0
+  ) {}
+
+  @primary
+  get primary(): u64 {
+    return this.user.N;
+  }
+}
+
 @contract
 export class GameContract extends Contract {
   private balancesTable: TableStore<Balance> = new TableStore<Balance>(this.receiver);
   private userinfoTable: TableStore<UserInfo> = new TableStore<UserInfo>(this.receiver);
+  private leaderboardTable: TableStore<LeaderboardEntry> = new TableStore<LeaderboardEntry>(this.receiver);
 
   @action("startgame")
   startgame(user: Name): void {
@@ -65,5 +80,22 @@ export class GameContract extends Contract {
       balance.balance += 1;
       this.balancesTable.set(balance, this.receiver);
     }
+  }
+
+  @action("submitscore")
+  submitscore(user: Name, score: u64): void {
+    requireAuth(user);
+    check(score > 0, "Score must be greater than 0");
+    
+    let entry = this.leaderboardTable.get(user.N);
+    if (!entry) {
+      entry = new LeaderboardEntry(user, score, currentBlockTime());
+    } else {
+      if (score > entry.score) {
+        entry.score = score;
+        entry.timestamp = currentBlockTime();
+      }
+    }
+    this.leaderboardTable.set(entry, this.receiver);
   }
 }

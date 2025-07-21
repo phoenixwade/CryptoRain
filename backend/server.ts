@@ -11,7 +11,55 @@ interface PendingToken {
   count: number;
 }
 
+interface LeaderboardEntry {
+  user: string;
+  score: number;
+  timestamp: number;
+}
+
 const pendingTokens: PendingToken[] = [];
+const leaderboard: LeaderboardEntry[] = [];
+
+app.get('/leaderboard', async (req, res) => {
+  try {
+    const sortedLeaderboard = leaderboard
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10);
+    console.log('Fetching leaderboard:', sortedLeaderboard);
+    res.json(sortedLeaderboard);
+  } catch (err) {
+    console.error('Error fetching leaderboard:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+app.post('/submit-score', async (req, res) => {
+  const { user, score } = req.body;
+  if (!user || typeof score !== 'number' || score < 0) {
+    return res.status(400).send('Invalid user or score');
+  }
+  
+  try {
+    const newEntry: LeaderboardEntry = {
+      user,
+      score,
+      timestamp: Date.now()
+    };
+    
+    leaderboard.push(newEntry);
+    
+    leaderboard.sort((a, b) => b.score - a.score);
+    if (leaderboard.length > 10) {
+      leaderboard.splice(10);
+    }
+    
+    console.log(`Score submitted: ${user} - ${score}`);
+    res.json({ success: true, rank: leaderboard.findIndex(entry => entry.user === user && entry.score === score) + 1 });
+  } catch (err) {
+    console.error('Error submitting score:', err);
+    res.status(500).send('Server error');
+  }
+});
 
 app.post('/collect', async (req, res) => {
   const { user, token_type } = req.body;

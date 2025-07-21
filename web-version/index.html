@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Rain - Web Game</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #gameCanvas {
+            background: linear-gradient(180deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.9) 100%);
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .ui-element {
+            pointer-events: auto;
+        }
+        
+        #topUI {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            text-align: center;
+            z-index: 20;
+        }
+        
+        #levelText {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        #scoreText {
+            font-size: 16px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        #progressText {
+            font-size: 14px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        #centerUI {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 30;
+        }
+        
+        .button {
+            background: linear-gradient(45deg, #4a90e2, #357abd);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        #welcomeText {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        #gameOverOverlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 2px solid #4a90e2;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 40;
+            display: none;
+        }
+        
+        #gameOverTitle {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        #gameOverSubtitle {
+            color: #4a90e2;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        #finalScore {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        #tokensCollected {
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        
+        #leaderboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #4a90e2;
+            min-width: 200px;
+            z-index: 25;
+        }
+        
+        #leaderboard h3 {
+            color: #4a90e2;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            #leaderboard {
+                position: relative;
+                margin: 10px;
+                width: calc(100% - 20px);
+            }
+            
+            .button {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="ui">
+            <div id="topUI">
+                <div id="levelText">Level 1: New York</div>
+                <div id="scoreText">Score: 0</div>
+                <div id="progressText">Collected: 0/10</div>
+            </div>
+            
+            <div id="leaderboard">
+                <h3>🏆 Top 10</h3>
+                <div id="leaderboardList">
+                    <div class="leaderboard-entry">
+                        <span>Loading...</span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="centerUI" class="ui-element">
+                <div id="welcomeText" class="hidden">Welcome!</div>
+                <button id="loginBtn" class="button">Login with XPR</button>
+                <button id="startBtn" class="button hidden">Start Game</button>
+            </div>
+            
+            <div id="gameOverOverlay" class="ui-element">
+                <div id="gameOverTitle">Game Over</div>
+                <div id="gameOverSubtitle">in New York</div>
+                <div id="finalScore">Final Score: 0</div>
+                <div id="tokensCollected">Tokens Collected: 0</div>
+                <button id="claimBtn" class="button">Claim Tokens</button>
+                <button id="restartBtn" class="button">Play Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@proton/web-sdk@latest/dist/index.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
