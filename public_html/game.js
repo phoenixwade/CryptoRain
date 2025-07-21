@@ -28,7 +28,7 @@ class CryptoRainGame {
             weight: i < 10 ? 50 : i < 13 ? 20 : 5
         }));
         
-        this.API_URL = 'https://cryptokaraoke.io/api';
+        this.API_URL = window.CryptoRainConfig?.API_URL || 'https://cryptokaraoke.io/api';
         this.leaderboard = [];
         
         this.initializeProtonSDK();
@@ -49,9 +49,9 @@ class CryptoRainGame {
         try {
             if (typeof ProtonWebSDK !== 'undefined') {
                 this.protonSDK = new ProtonWebSDK({
-                    endpoints: ['https://proton-testnet.greymass.com'],
-                    appName: 'CryptoRain',
-                    requestAccount: 'gamecontract',
+                    endpoints: window.CryptoRainConfig?.PROTON_ENDPOINTS || ['https://proton-testnet.greymass.com'],
+                    appName: window.CryptoRainConfig?.APP_NAME || 'CryptoRain',
+                    requestAccount: window.CryptoRainConfig?.SMART_CONTRACT_ACCOUNT || 'gamecontract',
                     requestStatus: 'active'
                 });
                 console.log('Proton SDK initialized');
@@ -87,7 +87,7 @@ class CryptoRainGame {
     loadCityImages() {
         this.cities.forEach(city => {
             const img = new Image();
-            img.src = `https://via.placeholder.com/800x600/1a1a2e/ffffff?text=${city}`;
+            img.src = `${window.CryptoRainConfig?.PLACEHOLDER_IMAGE_BASE || 'https://via.placeholder.com/800x600/1a1a2e/ffffff?text='}${city}`;
             img.onload = () => {
                 this.cityImages[city] = img;
                 if (city === this.cities[0]) {
@@ -160,7 +160,7 @@ class CryptoRainGame {
         try {
             await this.protonSDK.transact({
                 actions: [{
-                    account: 'gamecontract',
+                    account: window.CryptoRainConfig?.SMART_CONTRACT_ACCOUNT || 'gamecontract',
                     name: 'startgame',
                     authorization: [{ actor: this.user, permission: 'active' }],
                     data: { user: this.user }
@@ -379,7 +379,7 @@ class CryptoRainGame {
             if (types.length > 0) {
                 await this.protonSDK.transact({
                     actions: [{
-                        account: 'gamecontract',
+                        account: window.CryptoRainConfig?.SMART_CONTRACT_ACCOUNT || 'gamecontract',
                         name: 'claimmulti',
                         authorization: [{ actor: this.user, permission: 'active' }],
                         data: { user: this.user, types }
