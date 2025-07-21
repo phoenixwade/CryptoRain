@@ -11,7 +11,7 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
         super().end_headers()
 
-os.chdir('/home/ubuntu/CryptoRain/web-version')
+os.chdir('/home/ubuntu/CryptoRain/public_html')
 
 with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
     print(f"Serving at http://localhost:{PORT}")

@@ -3,7 +3,10 @@ import cors from 'cors';
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ['https://cryptokaraoke.io', 'https://www.cryptokaraoke.io', 'http://localhost:8080'],
+  credentials: true
+}));
 
 interface PendingToken {
   user: string;
