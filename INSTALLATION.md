@@ -197,6 +197,7 @@ Ensure your domain has a valid SSL certificate:
 #### Prerequisites
 - XPR testnet account
 - Proton CLI installed locally
+- TypeScript to WASM compiler: `proton-asc` (included with proton-tsc)
 
 #### Deploy Contract
 
@@ -204,19 +205,53 @@ Ensure your domain has a valid SSL certificate:
 # Install Proton CLI
 npm install -g @proton/cli
 
-# Create contract project
-proton generate:contract gamecontract
+# Configure Proton CLI for testnet
+npx @proton/cli chain:set proton-test
+npx @proton/cli chain:get  # Verify chain is set correctly
 
-# Copy contract code
-cp smart-contract/gamecontract.contract.ts gamecontract/gamecontract.contract.ts
+# Add your wsaffiliate private key (XPR format, not GitHub token)
+npx @proton/cli key:add YOUR_WSAFFILIATE_PRIVATE_KEY
+# Choose "no" when asked about password encryption
+npx @proton/cli key:list  # Verify key is stored
 
-# Build contract
-cd gamecontract
-proton build
+# Navigate to smart contract directory
+cd smart-contract/
 
-# Deploy to testnet
-proton deploy gamecontract --account @youraccount
+# Compile TypeScript contract to WASM
+npx proton-asc gamecontract.contract.ts
+# This generates target/gamecontract.contract.wasm and target/gamecontract.contract.abi
+
+# Deploy to XPR testnet using wsaffiliate account
+npx @proton/cli contract:set wsaffiliate ./target
+
+# Verify deployment by checking contract on XPR block explorer
 ```
+
+#### Troubleshooting
+
+**Chain Configuration Issues:**
+- Use `proton-test` (not `testnet`) for XPR testnet
+- Verify with `npx @proton/cli chain:list` to see available chains
+
+**Compilation Errors:**
+- Ensure all imports use correct proton-tsc exports
+- Use `u8[]` instead of `Vector<u8>` for array parameters  
+- Use `currentBlockNum()` instead of `currentBlockTime()`
+- Types like `u8`, `u64`, `usize`, `i32` are built-in AssemblyScript types
+- Use `sizeof<T>()` for size calculations (built-in AssemblyScript function)
+- Use `packNumberArray<T>()` and `unpackNumberArray<T>()` for array serialization
+- Remove duplicate action classes if auto-generated multiple times
+
+**Deployment Failures:**
+- Verify account has sufficient RAM and CPU resources
+- Check that private key corresponds to the deployment account
+- Ensure WASM and ABI files exist in target directory
+
+**Key Format Error:**
+If you get "invalid base-58 value" error, ensure you're using the XPR private key for wsaffiliate account, not a GitHub or other token. The private key should be in base-58 format starting with "5" and be approximately 51 characters long.
+
+**Missing Private Key:**
+The wsaffiliate account private key is required for deployment. This should be obtained from the XPR testnet account creation process, not from GitHub tokens or other sources.
 
 ### 4.2 XPR Webauth Configuration
 
